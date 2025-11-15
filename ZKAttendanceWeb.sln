@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZKAttendanceWeb", "ZKAttendanceWeb\ZKAttendanceWeb.csproj", "{FB8FD285-F0AA-46A8-9DD9-4B9E67F79601}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB8FD285-F0AA-46A8-9DD9-4B9E67F79601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB8FD285-F0AA-46A8-9DD9-4B9E67F79601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB8FD285-F0AA-46A8-9DD9-4B9E67F79601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB8FD285-F0AA-46A8-9DD9-4B9E67F79601}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA213558-A1BE-431A-BE4F-00721E8AF52A}
+	EndGlobalSection
+EndGlobal

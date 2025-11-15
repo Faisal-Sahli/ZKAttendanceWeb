@@ -1,0 +1,79 @@
+﻿@using ZKAttendanceWeb.DTOs.Reports
+@model DailyAttendanceReportSummaryDto
+
+<div class="container">
+    <h2>تقرير الحضور اليومي - @Model.ReportDate.ToString("dd/MM/yyyy")</h2>
+
+    <!-- الإحصائيات -->
+    <div class="stats">
+        <div class="stat-box">إجمالي: @Model.TotalEmployees</div>
+        <div class="stat-box">حاضرين: @Model.PresentCount</div>
+        <div class="stat-box">غائبين: @Model.AbsentCount</div>
+        <div class="stat-box">متأخرين: @Model.LateCount</div>
+    </div>
+
+    <!-- قائمة الحاضرين -->
+    <h3>الموظفين الحاضرين</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>الرقم</th>
+                <th>الاسم</th>
+                <th>القسم</th>
+                <th>وقت الدخول</th>
+                <th>وقت الخروج</th>
+                <th>ساعات العمل</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in Model.PresentEmployees)
+            {
+                <tr>
+                    <td>@emp.EmployeeNumber</td>
+                    <td>@emp.EmployeeName</td>
+                    <td>@emp.DepartmentName</td>
+                    <td>@emp.CheckInTime?.ToString("HH:mm")</td>
+                    <td>@emp.CheckOutTime?.ToString("HH:mm")</td>
+                    <td>
+                        @if (emp.WorkDuration.HasValue)
+                        {
+                            @($"{(int)emp.WorkDuration.Value.TotalHours}:{emp.WorkDuration.Value.Minutes:D2}")
+                        }
+                        else
+                        {
+                            @("--")
+                        }
+                    </td>
+                    <td>@emp.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- قائمة الغائبين -->
+    <h3>الموظفين الغائبين</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>الرقم</th>
+                <th>الاسم</th>
+                <th>القسم</th>
+                <th>الهاتف</th>
+                <th>السبب</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in Model.AbsentEmployees)
+            {
+                <tr>
+                    <td>@emp.EmployeeNumber</td>
+                    <td>@emp.EmployeeName</td>
+                    <td>@emp.DepartmentName</td>
+                    <td>@emp.PhoneNumber</td>
+                    <td>@emp.AbsentReason</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

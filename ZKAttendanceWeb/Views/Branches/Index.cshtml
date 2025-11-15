@@ -1,0 +1,312 @@
+﻿@model List<ZKAttendanceWeb.Models.Branch>
+
+@{
+    ViewData["Title"] = "الفروع";
+    var totalEmployees = Model.Sum(b => b.EmployeeBranches?.Count(eb => eb.IsActive) ?? 0);
+    var totalDevices = Model.Sum(b => b.Devices?.Count(d => d.IsActive) ?? 0);
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: none;
+        font-weight: 600;
+        color: #495057;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+    .badge-count {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+</style>
+
+<div class="container-fluid" dir="rtl">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">
+                    <i class="fas fa-building me-2"></i>
+                    إدارة الفروع
+                </h2>
+                <p class="mb-0 opacity-75">عرض وإدارة جميع الفروع والأجهزة</p>
+            </div>
+            <a asp-action="Create" class="btn btn-light btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>
+                إضافة فرع جديد
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-number">@Model.Count</div>
+            <div class="stat-label">إجمالي الفروع</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number">@totalEmployees</div>
+            <div class="stat-label">إجمالي الموظفين</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🖥️</div>
+            <div class="stat-number">@totalDevices</div>
+            <div class="stat-label">إجمالي الأجهزة</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number">@Model.Count(b => b.IsActive)</div>
+            <div class="stat-label">الفروع النشطة</div>
+        </div>
+    </div>
+
+    <!-- Branches Table -->
+    <div class="table-card">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">رمز الفرع</th>
+                        <th style="width: 20%;">اسم الفرع</th>
+                        <th style="width: 15%;">المدينة</th>
+                        <th style="width: 10%;" class="text-center">الموظفين</th>
+                        <th style="width: 10%;" class="text-center">الأجهزة</th>
+                        <th style="width: 15%;">آخر مزامنة</th>
+                        <th style="width: 10%;" class="text-center">الحالة</th>
+                        <th style="width: 10%;" class="text-center">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var branch in Model)
+                    {
+                        var employeeCount = branch.EmployeeBranches?.Count(eb => eb.IsActive) ?? 0;
+                        var deviceCount = branch.Devices?.Count(d => d.IsActive) ?? 0;
+
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">@branch.BranchCode</span>
+                            </td>
+                            <td>
+                                <strong>@branch.BranchName</strong>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(branch.City))
+                                {
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>
+                                    <span>@branch.City</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (employeeCount > 0)
+                                {
+                                    <span class="badge bg-primary badge-count">
+                                        <i class="fas fa-users me-1"></i>
+                                        @employeeCount
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-muted badge-count">0</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (deviceCount > 0)
+                                {
+                                    <span class="badge bg-info badge-count">
+                                        <i class="fas fa-fingerprint me-1"></i>
+                                        @deviceCount
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-muted badge-count">0</span>
+                                }
+                            </td>
+                            <td>
+                                @if (branch.LastSyncTime.HasValue)
+                                {
+                                    <small class="text-muted">
+                                        <i class="fas fa-sync-alt me-1"></i>
+                                        @branch.LastSyncTime.Value.ToString("yyyy-MM-dd")
+                                        <br />
+                                        @branch.LastSyncTime.Value.ToString("HH:mm")
+                                    </small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        <i class="fas fa-times-circle me-1"></i>
+                                        لم يتم
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (branch.IsActive)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        نشط
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-pause-circle me-1"></i>
+                                        غير نشط
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Details"
+                                       asp-route-id="@branch.BranchId"
+                                       class="btn btn-sm btn-info"
+                                       title="عرض التفاصيل">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit"
+                                       asp-route-id="@branch.BranchId"
+                                       class="btn btn-sm btn-warning"
+                                       title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Delete"
+                                          asp-route-id="@branch.BranchId"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('هل أنت متأكد من حذف هذا الفرع؟\n\nملاحظة: سيتم حذف جميع الارتباطات مع الموظفين.');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                title="حذف">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-building"></i>
+                <h4>لا توجد فروع</h4>
+                <p class="text-muted">ابدأ بإضافة فرع جديد للنظام</p>
+                <a asp-action="Create" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    إضافة فرع جديد
+                </a>
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // إظهار رسائل النجاح/الخطأ من TempData
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                toastr.success('@TempData["Success"]');
+                </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                toastr.error('@TempData["Error"]');
+                </text>
+        }
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@model ZKAttendanceWeb.DTOs.Reports.DailyAttendanceReportDto
+
+<h2>التقرير اليومي للحضور - @Model.Date.ToString("yyyy-MM-dd")</h2>
+
+<form method="get" class="mb-3">
+    <div class="input-group" style="max-width: 300px;">
+        <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
+        <button type="submit" class="btn btn-primary">عرض</button>
+    </div>
+</form>
+
+@if (Model.Items.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>اسم الموظف</th>
+                <th>الإدارة</th>
+                <th>أول حضور</th>
+                <th>آخر خروج</th>
+                <th>إجمالي الساعات</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.EmployeeName</td>
+                    <td>@item.Department</td>
+                    <td>@item.FirstCheckIn?.ToString("HH:mm") ?? "-"</td>
+                    <td>@item.LastCheckOut?.ToString("HH:mm") ?? "-"</td>
+                    <td>@(item.TotalWorkHours?.ToString(@"hh\:mm") ?? "-")</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">لا توجد سجلات لعرضها لهذا التاريخ.</div>
+}
